@@ -11,7 +11,7 @@ function App() {
   }
   return (
 
-    <div className="bg-[#282836] w-full min-h-screen ">
+    <div className="bg-[#bd9820] w-full min-h-screen ">
       <Sidevar  showMenu={showMenu}/>
       <nav className="bg-[#1F1D2A] lg:hidden text-gray-400 fixed text-3xl py-1 px-8 rounded-tl-xl rounded-tr-xl flex items-center justify-between  w-full bottom-0 left-0">
         <button className=""><RiUser3Line/></button>
