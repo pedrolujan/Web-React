@@ -1,26 +1,91 @@
-import { useState } from "react";
-import Sidevar from "./components/shared/sidevar"
-import { RiMenu3Fill,RiUser3Line,RiAddLine,RiLightbulbLine,RiCloseLine } from "react-icons/ri";
 
-function App() {
-  const [showMenu,setShowMenu]=useState(false);
-  const [showOrder,setshowOrder]=useState(false);
+// import React from 'react';
+import React, { Component } from "react";
 
-  const toggleMenu=()=>{
-    setShowMenu(!showMenu);
+
+import SidebarMenu from './Pages/Sidebar'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import Dashboard from './Pages/Dashboard'
+import Clientes from './Pages/Clientes'
+import Productos from './Pages/Productos'
+import Login from './Pages/Login';
+import Sidebar from "./Pages/Sidebar";
+
+function getCookie(name) {
+  const cookieString = document.cookie;
+  const cookies = cookieString.split(';');
+  for (let i = 0; i < cookies.length; i++) {
+    const cookie = cookies[i].trim();
+    if (cookie.startsWith(name + '=')) {
+      return cookie.substring(name.length + 1);
+    }
   }
-  return (
-
-    <div className="bg-[#bd9820] w-full min-h-screen ">
-      <Sidevar  showMenu={showMenu}/>
-      <nav className="bg-[#1F1D2A] lg:hidden text-gray-400 fixed text-3xl py-1 px-8 rounded-tl-xl rounded-tr-xl flex items-center justify-between  w-full bottom-0 left-0">
-        <button className=""><RiUser3Line/></button>
-        <button className=""><RiAddLine/></button>
-        <button className=""><RiLightbulbLine/></button>
-        <button onClick={toggleMenu} className="text-white  p-3">{showMenu?<RiCloseLine/>:<RiMenu3Fill/>}</button>
-      </nav>
-    </div>
-  )
+  return null;
 }
 
+
+class App extends Component {
+
+  componentDidMount() {
+    const idUsuario = getCookie('idUsuario');
+    if (!idUsuario && window.location.pathname !== "/") {
+      window.location.href = "/";
+    }
+    const showNavbar = (toggleId, navId, bodyId, headerId) => {
+      const toggle = document.getElementById(toggleId),
+        nav = document.getElementById(navId),
+        bodypd = document.getElementById(bodyId),
+        headerpd = document.getElementById(headerId)
+
+      // Validate that all variables exist
+      if (toggle && nav && bodypd && headerpd) {
+        toggle.addEventListener('click', () => {
+          // show navbar
+          nav.classList.toggle('show')
+          // change icon
+          toggle.classList.toggle('bx-x')
+          // add padding to body
+          bodypd.classList.toggle('body-pd')
+          // add padding to header
+          headerpd.classList.toggle('body-pd')
+        })
+      }
+      showNavbar('header-toggle', 'nav-bar', 'body-pd', 'header')
+
+      /*===== LINK ACTIVE =====*/
+      const linkColor = document.querySelectorAll('.nav_link')
+
+      function colorLink() {
+        if (linkColor) {
+          linkColor.forEach(l => l.classList.remove('active'))
+          this.classList.add('active')
+        }
+      }
+      linkColor.forEach(l => l.addEventListener('click', colorLink))
+    }
+
+  }
+  render() {
+    const idUsuario = getCookie('idUsuario');
+    return (
+      <BrowserRouter>
+        {!idUsuario ?
+          <Routes>
+            <Route path="/" element={<Login />} />
+          </Routes>
+          :
+          <Sidebar>
+            <Routes>
+              <Route path="/" element={<Login />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/clientes" element={<Clientes />} />
+              <Route path="/productos" element={<Productos />} />
+            </Routes>
+          </Sidebar>
+
+        }
+      </BrowserRouter>
+    )
+  }
+}
 export default App
