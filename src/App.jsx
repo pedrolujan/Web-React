@@ -10,6 +10,7 @@ import Clientes from './Pages/Clientes'
 import Productos from './Pages/Productos'
 import Login from './Pages/Login';
 import Sidebar from "./Pages/Sidebar";
+import Usuario from "./Pages/Usuario";
 
 function getCookie(name) {
   const cookieString = document.cookie;
@@ -79,6 +80,7 @@ class App extends Component {
               <Route path="/" element={<Login />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/clientes" element={<Clientes />} />
+              <Route path="/usuario" element={<Usuario />} />
               <Route path="/productos" element={<Productos />} />
             </Routes>
           </Sidebar>

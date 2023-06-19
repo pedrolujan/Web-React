@@ -11,14 +11,9 @@ import {
     FaShoppingBag,
     FaThList
 } from "react-icons/fa";
+import { User } from "../Class/Clases"
 import { ImExit, ImUser } from "react-icons/im";
-import {
-    RiHome6Line,
-    RiPercentLine,
-    RiPieChartLine,
-    RiMailLine,
-    RiLogoutCircleRLine
-} from "react-icons/ri"
+
 import { Cookies } from 'react-cookie';
 import { BsList } from "react-icons/bs";
 import fileContent from "../assets/LeerAPI";
@@ -57,7 +52,7 @@ const Sidebar = ({ children }) => {
         setShowMenu(!showMenu);
     }
 
-    const [activo, setActivo] = useState(0);
+    const [activo, setActivo] = useState("01");
 
     const ocultarAutomatico = () => {
         if (showMenu && isOpen == false) {
@@ -71,7 +66,7 @@ const Sidebar = ({ children }) => {
     }
     function deleteCookie(name) {
         document.cookie = name + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-      }
+    }
     const CerrarSesion = () => {
         deleteCookie("idAcceso");
         deleteCookie("idUsuario");
@@ -88,16 +83,25 @@ const Sidebar = ({ children }) => {
     //array para llanar a los formularios hijos
     const menuItem = [
         {
+            id: "01",
             path: "/dashboard",
             name: "Dashboard",
             icon: <FaTh />
         },
         {
+            id: "02",
             path: "/clientes",
             name: "Clientes",
             icon: <FaUserAlt />
         },
         {
+            id: "03",
+            path: "/usuario",
+            name: "Usuario",
+            icon: <ImUser />
+        },
+        {
+            id: "04",
             path: "/productos",
             name: "Productos",
             icon: <FaShoppingBag />
@@ -115,6 +119,22 @@ const Sidebar = ({ children }) => {
 
                 const response = await fetch(baseurl);
                 const data = await response.json();
+
+                // console.log(data);
+                const dataArray = Array.isArray(data.result) ? data.result : [data.result];
+                const dataUser = dataArray.map((usuario) => {
+                    return new User(
+                        usuario.cApeMat,
+                        usuario.cApePat,
+                        usuario.cDireccion,
+                        usuario.cDocumento,
+                        usuario.cPrimerNom,
+                        usuario.cUsuario
+                    );
+                });
+                // console.log(dataUser);
+
+
                 if (data && data.result.btImgPerfil) {
 
                     // Eliminar caracteres no válidos de la cadena de base64
@@ -148,38 +168,36 @@ const Sidebar = ({ children }) => {
 
 
     return (
-        <div className='bg-[#ecf1f1]  min-h-screen' onClick={ocultarAutomatico}>
+        <div className='bg-[#e5e5e5c7]  min-h-screen' onClick={ocultarAutomatico}>
 
-            <div className={` bg-[#242527] z-50 fixed lg:left-0 top-0 w-40 h-full flex flex-col  justify-between py-1 
+            <div className={` bg-[#2d3035] z-50 fixed lg:left-0 top-0 w-52 h-full flex flex-col  justify-between py-1 
                     transition-all ${showMenu ? "lef-0" : "-left-full"} `} id='Sidebar' >
                 <div className=' '>
-                    <div className='text-2xl text-gray-300 uppercase font-bold text-center my-0' >
-                        <img className='border-t-1 m-b-2' src='../src/image/LOGO_NEGRO.png' />
+                    <div className='text-2xl text-gray-300 uppercase font-bold text-center my-0   ' >
+                        <img className='border-t-1 m-b-2 px-6 py-3' src='../src/image/LOGO.png' />
                     </div>
-                    <hr className='mt-0.5' />
+                    {/* <hr className='mt-0.5' /> */}
 
-                    <div className='pl-0 w-auto '>
-                        {
-                            menuItem.map((item, index) => (
-                                <NavLink to={item.path} key={index} className={`dvLetrasMenu flex w-auto  ${activo === index ? 'activo' : ''}`} onClick={() => handleActive(index)} >
-                                    <div className={`dvItemMenu flex items-center group hover:bg-[#FF3B26] p-1 w-full group transition-colors `}   >
-
-                                        <div className="icon flex text-[#FF3B26] m-0 w-auto group-hover:text-white transition-colors" >
-                                            <span className='p-4 text-2xl'>
+                    <div className='pl-0 w-auto  '>
+                        {menuItem
+                            .filter((item) => item.id !== "03")
+                            .map((item) => (
+                                <NavLink to={item.path} key={item.id} className={`dvLetrasMenu  text-[#ffffff]  flex w-auto ${item.id === activo ? 'activo' : ''}`} onClick={() => handleActive(item.id)}>
+                                    <div className={`dvItemMenu pr-4 flex items-center group hover:bg-[#ffffff] p-1 w-full group transition-colors`}>
+                                        <div className="icon flex  m-0 w-auto group-hover:text-[#FF3B26] transition-colors">
+                                            <span className='p-4 text-xl'>
                                                 {item.icon}
                                             </span>
                                         </div>
-
-                                        <div className=" w-full  p-1 text-[#FF3B26]  group-hover:text-white transition-colors  ">
+                                        <div className="w-full p-1  group-hover:text-[#FF3B26] transition-colors">
                                             <span>
                                                 {item.name}
                                             </span>
                                         </div>
                                     </div>
-
                                 </NavLink>
-                            ))
-                        }
+                            ))}
+
                     </div>
                 </div>
                 {/* <div className=' '>
@@ -193,24 +211,46 @@ const Sidebar = ({ children }) => {
                 </div> */}
             </div>
 
-            <div className=' lg:pl-40  w-full ' >
-                <nav className="bg-[#FF3B26]  text-white fixed text-3xl py-2 px-0   lg:rounded-br-none flex items-center justify-between  w-full top-0 left-0 h-16">
+            <div className=' lg:pl-52  w-full  ' >
+                <nav className="dvHeader bg-[#ffffff]  text-[#3b3b3b] fixed text-3xl py-2 px-0   lg:rounded-br-none flex items-center justify-between  w-full top-0 left-0 h-16">
                     <div className=' px-5'>
                         <button onClick={toggleMenu} className="  p-1 ml-2 text-4xl">{showMenu ? <BsList /> : <BsList />}</button>
                     </div>
 
-                    <div className='bg-[#0000006e] flex rounded-l-full border-b-2 border-t-2 border-[#505050]' onClick={handleImagenUserClick}>
+                    <div className='cursor-pointer flex rounded-l-full border-[#505050]' onClick={handleImagenUserClick}>
                         <div className='items-center'>
-                            <img className='object-cover  cursor-pointer bg-[#100cee] border-2 border-[#505050] w-14 h-14 rounded-full border-solid' src={profileImage || '../src/image/PhotoUser.png'} />
+                            <img className='object-cover  cursor-pointer border-2 border-[#FF3B26] w-14 h-14 rounded-full border-solid' src={profileImage || '../src/image/PhotoUser.png'} />
                             <div className={`dvDesplegable w-32 ${isDesplegableVisible ? 'dvDesplegableActivo' : 'dvDesplegableInactivo'}`}>
-                                <ul className='pl-3 pr-2 w-full'>
-                                    <li className='text-base'>
-                                        <i className="iconUser"><ImUser /></i>
-                                        <a href="#" id="btnperfil" className=''>Perfil</a>
+                                <ul className=' w-full '>
+                                    <li className='text-base p-1 text-[#ffffff] '>
+                                        {menuItem.filter((item) => item.name == "Usuario")
+                                            .map((item) => (
+                                                <NavLink to={{ pathname: "./Usuario", state: { message: 'Hola Mundo' } }} key={item.name} className={` flex w-full m-0 `} >
+                                                    <span className=' text-2xl pr-2 '>
+                                                        {item.icon}
+                                                    </span>
+
+                                                    <span className="dvLetraIcono ">
+                                                        <span>
+                                                            {item.name}
+                                                        </span>
+                                                    </span>
+
+                                                </NavLink>
+                                            ))}
+
+
                                     </li>
-                                    <li onClick={CerrarSesion} className='text-base'><i><ImExit /></i><a href="#">Salir</a></li>
+                                    <li onClick={CerrarSesion} className='text-base ml-0  w-full p-1 text-[#ffffff]'>
+                                        <a href="#" className='flex w-full items-center'>
+                                            <span className='mr-0 w-8  text-2xl pr-2 '><ImExit /></span>
+                                            <span className='ml-0 w-full '>Salir</span>
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
+
+
                         </div>
                         <div className='flex items-center justify-center'>
                             <p className='text-sm mr-2 ml-2 cursor-pointer'>{getCookie('cPrimerNom')}</p>

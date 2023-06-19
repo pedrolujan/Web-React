@@ -4,7 +4,7 @@ import axios from "axios";
 import Cookies from "universal-cookie";
 import { useCookies } from 'react-cookie';
 import fileContent from "../assets/LeerAPI";
-
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 //Conexion
 const baseUrl = fileContent + "Personal/Login";
@@ -20,24 +20,33 @@ function getCookie(name) {
   }
   return null;
 }
-class Login extends Component {
 
+class Login extends Component {
   state = {
     form: {
       _pcUsuario: '',
-      _clave: ''
+      _clave: '',
+      showPassword: false
     }
   }
+
   handlechange = async e => {
     await this.setState({
       form: {
         ...this.state.form,
         [e.target.name]: e.target.value
-
       }
-    })
-
+    });
   }
+
+  handleTogglePassword = () => {
+    this.setState(prevState => ({
+      form: {
+        ...prevState.form,
+        showPassword: !prevState.form.showPassword
+      }
+    }));
+  };
   inicarSesion = async () => {
     console.log(this.state.form);
     await axios.get(baseUrl, {
@@ -76,6 +85,7 @@ class Login extends Component {
       .catch(error => {
         console.log("Error");
       });
+
   };
 
   componentDidMount() {
@@ -84,12 +94,17 @@ class Login extends Component {
       window.location.href = "/";
     }
   }
+  handleKeyPress = (event) => {
+    if (event.key === 'Enter') {
+      this.inicarSesion();
+    }
+  };
 
 
 
   render() {
     return (
-     
+
       <div className=' flex  items-center justify-center w-full min-h-screen m-auto p-2 top-auto left-auto row-auto bg-auto  static  '>
         <div className="w-full lg:w-4/12 sm:w-96 rounded-md overflow-hidden shadow-2xl shadow-[#837f7f] ">
           <div className="bg-[#ffffff] p-5 border-2 border-[#c7c7c785]">
@@ -105,24 +120,42 @@ class Login extends Component {
                   <label className='text-lg font-medium  text-[#FF3B26]'>Usuario</label>
                   <input
                     type="text" id="user" name="_pcUsuario"
-                    className='w-full border-2 border-[#ff3c264d] rounded-xl p-4 mt-1 text-[#000000] focus:outline-none  focus:border-1 focus:border-[#ec0d0d]'
+                    className='w-full border-2 border-[#ff3c26b0] rounded-xl p-4 mt-1 text-[#000000] focus:outline-none  focus:border-1 '
                     placeholder="Ingrese su Usuario"
                     onChange={this.handlechange} />
                 </div>
-                <div className='flex flex-col mt-4'>
+                <div className=''>
                   <label className='text-lg font-medium text-[#FF3B26]'>Contraseña</label>
-                  <input
-                    className='inputText w-full border-2 border-[#ff3c264d] rounded-xl p-4 mt-1 text-[#000000] focus:outline-none focus:border-[#ec0d0d]'
-                    placeholder="Ingrese su contraseña"
-                    type="password" id="password" name="_clave"
-                    onChange={this.handlechange}
-                  />
+                  <div className="flex items-center mt-4 ">
+                    <input
+                      onKeyDown={this.handleKeyPress}
+                      className='inputText w-full border-t-2 border-b-2 border-l-2 border-[#ff3c26b0]   rounded-l-xl p-4 mt-1 text-[#000000] focus:outline-none '
+                      placeholder="Ingrese su contraseña"
+                      type={this.state.form.showPassword ? "text" : "password"}
+                      id="password"
+                      name="_clave"
+                      value={this.state.form._clave}
+                      onChange={this.handlechange}
+                    />
+                    <button
+                      onClick={this.handleTogglePassword}
+                      className='  border-r-2 border-t-2 border-b-2 border-[#ff3c26b0]  rounded-r-xl p-5 mt-1 text-[#000000] focus:outline-none'
+                    >
+                      <span className="text-md text-[#FF3B26] ">
+                        {this.state.form.showPassword ? <FaEyeSlash /> : <FaEye />}
+                      </span>
+
+                    </button>
+                  </div>
+
                 </div>
 
-                <div className='mt-8 flex flex-col  pb-5 pt-3'>
+                <div className='mt-8 flex flex-col pb-5 pt-3'>
                   <button className='active:scale-[.98] active:duration-75 transition-all hover:scale-[1.01]  ease-in-out transform py-4 bg-[#FF3B26] rounded-xl text-white font-bold text-lg'
                     onClick={() => this.inicarSesion()}
-                  >Sign in</button>
+                  // eslint-disable-next-line jsx-a11y/keypress-events-have-key-actions
+
+                  >Ingresar</button>
 
                 </div>
                 {/* <div className='mt-8 flex justify-center items-center'>
@@ -134,10 +167,11 @@ class Login extends Component {
               </div>
             </div>
           </div>
-
-
         </div>
       </div>
+
+
+
     )
   }
 
