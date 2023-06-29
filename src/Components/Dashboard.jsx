@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import fileContent from "../assets/LeerAPI";
-import { componentDidMountLlenarComboboxTipoReporte, componentDidMountLlenarComboboxUsuario, componentDidMountLlenarComboboxFiltroIngresos, componentDidMountBuscarIngresos } from "../Funcions/Fun_Globales"
+import { componentDidMountLlenarComboboxTipoReporte, componentDidMountLlenarComboboxUsuario, componentDidMountLlenarComboboxFiltroIngresos, componentDidMountBuscarIngresos, fnImporteCaja } from "../Funcions/Fun_Globales"
 
 import "./Dashboard.scss";
 import { startOfMonth } from 'date-fns';
@@ -9,8 +9,9 @@ import { FaWhatsapp, FaMoneyBillAlt, FaCheck, FaRegTimesCircle } from "react-ico
 import { RiSignalTowerLine, RiTimerLine } from "react-icons/ri";
 import { HiOutlineLockClosed } from "react-icons/hi2";
 import { TfiBell, TfiAlert } from "react-icons/tfi";
-
-
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
+import { GiPiggyBank } from "react-icons/gi";
+import { GoChevronRight } from "react-icons/go";
 
 //fecha Actual
 const today = new Date();
@@ -24,6 +25,12 @@ let resultUser = [];
 //Buscar
 const BuscarIngresosInicial = await componentDidMountBuscarIngresos(true, false, startOfMonthDate, today, "TRPT0001", "0", "0", "0", "0", "0", "0", "%22%20%22", "0", "-1", "0");
 // console.log(BuscarUsuario[1]);
+
+
+//LlenarImporteCaja
+const ImporteCaja = await fnImporteCaja(today, 0)
+//  console.log(ImporteCaja);
+
 
 //Llenar Combobox FiltroIngresos
 const cboFiltroIngresos = await componentDidMountLlenarComboboxFiltroIngresos("cboFiltrarIngresos", "idOperacion", "cNombreOperacion", "OperacionHusat", "cTipoOpe", 4, true);
@@ -45,9 +52,10 @@ const IconSupeior = (codigoB) => {
 }
 
 //Crear una funcion
-const IconCodigo = (codigo) => {
-    let heartIcon = null; // Cambiamos la declaración a 'let'
 
+//Funcion para Cambiar el incono con respecto al codigo 
+const fnIconCodigoInferior = (codigo) => {
+    let heartIcon = null; // Cambiamos la declaración a 'let'
     if (codigo === "00000005") {
         heartIcon = <FaWhatsapp />;
     } else if (codigo === "00000004") {
@@ -59,13 +67,12 @@ const IconCodigo = (codigo) => {
     } else if (codigo === "00000001") {
         heartIcon = < TfiBell />;
     }
-
     return heartIcon;
 }
 
 
 //Funcion Formatear Precio
-const FormatearPrecio = (importe) => {
+const fnFormatearPrecio = (importe) => {
 
     const formattedPrice = importe.toLocaleString("es-PE", {
         style: "currency",
@@ -73,8 +80,8 @@ const FormatearPrecio = (importe) => {
     });
 
     return formattedPrice
-
 }
+
 // console.log("Dia final" + today);
 // console.log("Dia Uno" + startOfMonthDate);
 function getCookie(name) {
@@ -88,10 +95,9 @@ function getCookie(name) {
     }
     return null;
 }
+
 const cboUserInicial = await componentDidMountLlenarComboboxUsuario(true, startOfMonthDate, today, true, 0);
-class Dashboard extends Component {
-
-
+class Dashboard2 extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -104,15 +110,13 @@ class Dashboard extends Component {
             reportBusquedaDetallada: [],
             MostrarBusquedaDetalle: false,
             MostrarMasDetalleBusquedas: false,
-            reportMasDetalleBusqueda: []
+            reportMasDetalleBusqueda: [],
+            stimporteCaja: false
 
         };
-
-
     }
 
-
-    handleChangeDia = () => {
+    fnhandleChangeDia = () => {
         this.setState(prevStateDia => ({
             ischeckedDia: !prevStateDia.ischeckedDia
 
@@ -125,22 +129,29 @@ class Dashboard extends Component {
 
     };
 
+    fnImporteCaja = () => {
+        this.setState(prevState => ({
+            stimporteCaja: !prevState.stimporteCaja
+        }));
+        // console.log("Hola");
+    }
+
     //Ocultar Mas BusquedaDetalle
-    OcultarMasBusquedaDetalle = () => {
+    fnOcultarMasBusquedaDetalle = () => {
         this.setState(OcultarBD => ({
             MostrarMasDetalleBusquedas: false
         }));
     }
 
     //CheckBox
-    handleChange = () => {
+    fnhandleChange = () => {
         this.setState(prevState => ({
             isChecked: !prevState.isChecked
         }));
     };
 
     //handleBusqueda
-    handleBusqueda = async () => {
+    fnhandleBusqueda = async () => {
 
         let dtFechaInicio = document.getElementById('fechaInicio').value;
         let dtFechaFinal = document.getElementById('fechaFinal').value;
@@ -164,10 +175,10 @@ class Dashboard extends Component {
         this.setState({
             MostrarMasDetalleBusquedas: false
         })
-
-
     }
-    handleBusquedaDetalles = async (event) => {
+
+    //Funcion Mostrar BusquedaDetalle
+    fnhandleBusquedaDetalles = async (event) => {
         let codigoReporte = event.target.parentNode.getAttribute('attr');
         document.cookie = `IdSegundaTabla=${codigoReporte}; path=/`;
         let dtFechaInicio = document.getElementById('fechaInicio').value;
@@ -189,14 +200,12 @@ class Dashboard extends Component {
         this.setState({
             MostrarBusquedaDetalle: true
         })
-
-
-        console.log(codigoReporte);
-
+        // console.log(codigoReporte);
 
     }
 
-    handleMasBusquedaDetalles = async (event) => {
+    //Funcion Mostrar Más busquedaDetalle
+    fnhandleMasBusquedaDetalles = async (event) => {
         let codigoReporte = event.target.parentNode.getAttribute('attr');
         let idSegundaTabla = getCookie('IdSegundaTabla');
         let dtFechaInicio = document.getElementById('fechaInicio').value;
@@ -219,12 +228,12 @@ class Dashboard extends Component {
         this.setState({
             MostrarMasDetalleBusquedas: true
         })
-        console.log(this.state.reportMasDetalleBusqueda);
+        // console.log(this.state.reportMasDetalleBusqueda);
     }
 
 
     //dateTime Inicio
-    handleDateChange = async (event) => {
+    fnhandleDateChange = async (event) => {
 
         //Mostrar fechaInicio-FechaFinal
         const dtFechaInicio = document.getElementById('fechaInicio')
@@ -238,8 +247,6 @@ class Dashboard extends Component {
         this.setState({
             resultUser: await componentDidMountLlenarComboboxUsuario(chekeckFecha, dtFechaInicioValor, dtFechaFinalValor, true, 0),
         });
-
-
 
     };
 
@@ -264,10 +271,7 @@ class Dashboard extends Component {
 
             const response = await fetch(baseurl);
             const data = await response.json();
-
-
             // const codigosReporte = data.result.map((reporte) => reporte.codigoreporte);
-
 
             this.setState({
                 reportes: data.result,
@@ -277,8 +281,6 @@ class Dashboard extends Component {
             console.error("Error al obtener los datos de la API:", error);
         }
     }
-
-
 
     render() {
         const { reportes } = this.state;
@@ -290,8 +292,7 @@ class Dashboard extends Component {
         const { ischeckedDia } = this.state;
         const { MostrarMasDetalleBusquedas } = this.state;
         const { reportMasDetalleBusqueda } = this.state;
-
-
+        const { stimporteCaja } = this.state
 
         // console.log(reportBusqueda[0]);
 
@@ -300,7 +301,37 @@ class Dashboard extends Component {
         return (
 
             <div className="  p-0">
+                {/* Importe De Caja */}
+                <div className={`rounded-l-md m-2 bg-[#FF3B26]  absolute right-0 md:right-2 top-36 cursor-pointer    ${stimporteCaja ? "w-14" : "w-48"}`}  >
 
+                    <div className="flex items-center">
+                        <span
+                            className={`pr-2 p-1 flex items-center rounded-l-md bg-[#FF3B26] text-4xl text-[#f7eeed] ${stimporteCaja ? "ocultar-posicion" : ""}`}
+                            onClick={this.fnImporteCaja}
+                        >
+                            {stimporteCaja ? <GiPiggyBank /> : < GoChevronRight />}
+                        </span>
+
+                        <div className={`pl-1 w-full bg-[#ffffff] border-t-2 border-b-2 border-[#FF3B26] font-bold  justify-center ${stimporteCaja ? "hidden" : "block"}`} >
+                            <div className="text-[#FF3B26]  w-full  text-sm text-center">
+                                <span className="">
+                                    Importe en caja
+                                </span>
+                            </div>
+
+                            <div className="text-[#FF3B26]  w-full  text-sm text-center">
+                                <span className=" ">
+
+                                    {ImporteCaja.state == true ? fnFormatearPrecio(ImporteCaja.result[0].importe) : fnFormatearPrecio("00.00")}
+                                </span>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+
+                {/* Contenedores Superiores| Caja chica-Copias */}
                 <div className="dvContenedorInferior  w-full ">
                     <div key="contenedor" className="  items-center  mb-5 p-1 grid grid-cols-1  sm:grid-cols-2 md:grid-cols-3  lg:grid-cols-4 gap-1 rounded-md  justify-center ">
                         <div className="w-56 ">
@@ -326,13 +357,11 @@ class Dashboard extends Component {
 
 
                                     <div className="bg-[#0202027e]  p-1 rounded-bl-xl rounded-br-xl ">
-                                        <p className="ciPanelSupeior text-sm flex justify-around text-white "> {FormatearPrecio(reportBusqueda.importeRow)}</p>
+                                        <p className="ciPanelSupeior text-sm flex justify-around text-white "> {fnFormatearPrecio(reportBusqueda.importeRow)}</p>
                                     </div>
                                 </div>
                             ))
                         }
-
-
                         <div className=" w-56 ">
                             <h1>
 
@@ -345,8 +374,7 @@ class Dashboard extends Component {
                     <hr className=" border-1 border-[#afaeae65] mb-5 w-full" />
                 </div>
 
-
-
+                {/* Contenedores inferiores| Seguimiento-renovaciones-stock-pagos pendientes */}
                 <div className="dvContenedorInferior  items-center  mb-5 p-1 grid grid-cols-1  sm:grid-cols-2 md:grid-cols-3  lg:grid-cols-4 gap-1 rounded-md  justify-center">{
                     reportes.map((reporte) => (
                         <div className={`  md:w-56 mb-3 dvContenedoresInferiores  ${reporte.codigoreporte == "00000005" ? "bg-[#861B2D]" : reporte.codigoreporte == "00000004" ? "bg-[#AD7311]" : reporte.codigoreporte == "00000001" ? "bg-[#04837c]" : reporte.codigoreporte == "00000002" ? "bg-[#007E3F]" : "bg-[#a32c0f]"}  p-0 rounded-bl-lg rounded-xl`} key={reporte.codigoreporte} >
@@ -357,7 +385,7 @@ class Dashboard extends Component {
                                 <div className="pcCantidad text-4xl text-white">{reporte.cantidad}
                                 </div>
                                 <div className="pcImg  ">
-                                    <h1 className=" text-4xl text-white">{IconCodigo(reporte.codigoreporte)}</h1>
+                                    <h1 className=" text-4xl text-white">{fnIconCodigoInferior(reporte.codigoreporte)}</h1>
                                 </div>
                             </div>
                             <div className=" bg-[#13131377] flex  items-center justify-center rounded-bl-lg  rounded-br-xl ">
@@ -368,6 +396,7 @@ class Dashboard extends Component {
                 }
                 </div>
 
+                {/* GroupBox Busqueda */}
                 <div className="dvDetalleGeneral  w-full mt-4 grid grid-cols-1  sm:grid-cols-1 md:grid-cols-1  lg:grid-cols-1 gap-1 rounded-md">
                     <div className="pb-3" >
                         <div className=" bg-[#ffffff] placeholder:items-baseline justify-around  w-full  rounded-xl  grid grid-cols-1  sm:grid-cols-1 md:grid-cols-1  lg:grid-cols-1 gap-1 border-2 border-[#7a767649] border-l border-r border-b">
@@ -384,7 +413,7 @@ class Dashboard extends Component {
                                                 type="checkbox"
                                                 className="checked form-checkbox h-5 w-5 custom-checkbox"
                                                 checked={isChecked}
-                                                onChange={this.handleChange}
+                                                onChange={this.fnhandleChange}
                                             />
 
                                             <span className="ml-2 text-white " >Habilitar Fechas</span>
@@ -396,7 +425,7 @@ class Dashboard extends Component {
                                                 id="ChecketDiaEspecifico"
                                                 type="checkbox"
                                                 className="checked form-checkbox h-5 w-5 custom-checkbox"
-                                                onChange={this.handleChangeDia}
+                                                onChange={this.fnhandleChangeDia}
                                             />
 
                                             <span className="ml-2 text-white ">Dia Especifico</span>
@@ -417,7 +446,7 @@ class Dashboard extends Component {
                                                     name="fecha"
                                                     className="flex focus:outline-none  w-full mr-2 text-[#3b3b3b] border border-[#5f5f5f63] p-1 rounded-md"
                                                     defaultValue={startOfMonthDate.toISOString().split('T')[0]}
-                                                    onChange={this.handleDateChange}
+                                                    onChange={this.fnhandleDateChange}
                                                 />
                                             </h1>
                                         </div>
@@ -431,7 +460,7 @@ class Dashboard extends Component {
                                                     className="flex focus:outline-none  w-full mr-2 text-[#3b3b3b] border border-[#5f5f5f63] p-1 rounded-md"
                                                     defaultValue={today.toISOString().split('T')[0]}
                                                     //se ejecuta cuando hay cualquier cambio (onChenge)
-                                                    onChange={this.handleDateChange}
+                                                    onChange={this.fnhandleDateChange}
                                                 />
                                             </h1>
                                         </div>
@@ -452,11 +481,9 @@ class Dashboard extends Component {
                                             </select>
                                         </div>
 
-
                                         <div className="dvUsuario w-full ">
                                             <h1 className=" text-[#3b3b3b]  ml-1 mr-1   ">
                                                 Usuario
-
                                                 <select id="cboUsuario" style={{ fontSize: '12px' }} className="focus:outline-none flex w-full p-2 mr-2 text-black border rounded-md border-[#5f5f5f63]">
                                                     {
 
@@ -483,8 +510,8 @@ class Dashboard extends Component {
                                             <h1 className=" text-[#3b3b3b] ml-1 mr-1    ">
                                                 Buscar
                                                 <div className=" flex items-center">
-                                                    <input id="txtBuscarIngresos" type="search" placeholder="" className=" text-[#3b3b3b] w-full border-t border-l border-b border-[#5f5f5f63] p-0.5 run  focus:outline-none focus:border-[#5f5f5f63] rounded-l " />
-                                                    <button className="bg-[#ffffff] text-[#3b3b3b] p-1 text-xl rounded-r border-r border-t border-b border-[#5f5f5f63]" onClick={this.handleBusqueda}><BsSearch /></button>
+                                                    <input id="txtBuscarIngresos" type="search" placeholder="" onKeyDown={this.fnhandleBusqueda} className=" text-[#3b3b3b] w-full border-t border-l border-b border-[#5f5f5f63] p-0.5 run  focus:outline-none focus:border-[#5f5f5f63] rounded-l " />
+                                                    <button className="bg-[#ffffff] text-[#3b3b3b] p-1 text-xl rounded-r border-r border-t border-b border-[#5f5f5f63]" onClick={this.fnhandleBusqueda}><BsSearch /></button>
                                                 </div>
                                             </h1>
                                         </div>
@@ -492,11 +519,11 @@ class Dashboard extends Component {
                                 </div>
                                 <div className="dvCuerpoDG  flex m-2">
                                 </div>
-
                             </div>
                         </div>
                     </div>
 
+                    {/* GroupBox Filtrar-Ingresos */}
                     <div className=" bg-[#ffffff]  p-1 w-full grid grid-cols-1  rounded-md  border-2 border-[#7a767649] ">
                         <div className=" w-full  flex items-center justify-center gird grid-cols-2   ">
                             <div className="text-[#272527] flex w-full  ">
@@ -508,7 +535,6 @@ class Dashboard extends Component {
                                         Ingresos
                                     </span>
                                 </div>
-
                                 <div className="flex w-full p-2 items-center  ">
                                     <h1 className="text-[#3b3b3b] md:pr-5 md:pl-9 lg:pl-28  lg:pr-2 pe-1 ">Filtrar</h1>
                                     <select id="cboFiltroIngresos" style={{ fontSize: '12px' }} className="flex w-full md:w-60 p-2 mr-2 text-[#3b3b3b] focus:outline-none  border border-[#5f5f5f63]  rounded-md">
@@ -524,8 +550,9 @@ class Dashboard extends Component {
                             </div>
                         </div>
                     </div>
+                    {/* 1° Tabla de Ingresos */}
                     <div className="dvTablas grid grid-cols-1  sm:grid-cols-1 md:grid-cols-1  lg:grid-cols-2 gap-1 rounded-md justify-between ">
-                        <div className="bg-[#ffffff] w-full">
+                        <div className="bg-[#ffffff] w-full  cursor-pointer">
                             <div className="w-full">
                                 <div className="overflow-x-auto">
                                     <table className="w-full">
@@ -543,11 +570,11 @@ class Dashboard extends Component {
                                                     <>
                                                         {reportBusqueda[0].map((datos, index) => (
 
-                                                            <tr key={datos.codigoreporte} attr={datos.codigoreporte} className="text-[#3b3b3b] border-solid border-[#cfcece79] border-b-2 " onDoubleClick={this.handleBusquedaDetalles}>
+                                                            <tr key={datos.codigoreporte} attr={datos.codigoreporte} className="text-[#3b3b3b] border-solid border-[#cfcece79] border-b-2 " onDoubleClick={this.fnhandleBusquedaDetalles}>
                                                                 <td className="px-4 py-2 text-xs ">{index + 1}</td>
                                                                 <td className="px-4 py-2">{datos.detallereporte}</td>
                                                                 <td className="px-4 text-center text-xs">{datos.cantidad}</td>
-                                                                <td className="px-4 text-right">{FormatearPrecio(datos.importeRow)}</td>
+                                                                <td className="px-4 text-right">{fnFormatearPrecio(datos.importeRow)}</td>
                                                             </tr>
                                                         ))}
                                                         <tr className=" text-[#ffffff] bg-[#fd341e]">
@@ -564,7 +591,7 @@ class Dashboard extends Component {
 
                                                                 {this.state.reportBusqueda && this.state.reportBusqueda.length > 0 && (
                                                                     <>
-                                                                        {FormatearPrecio(this.state.reportBusqueda[0].reduce((total, item) => total + item.importeRow, 0))}
+                                                                        {fnFormatearPrecio(this.state.reportBusqueda[0].reduce((total, item) => total + item.importeRow, 0))}
                                                                     </>
                                                                 )}
                                                             </td>
@@ -582,7 +609,8 @@ class Dashboard extends Component {
 
                             </div>
                         </div>
-                        <div className={`w-full bg-[#ffffff]  ${MostrarBusquedaDetalle ? "block" : "hidden"}`}>
+                        {/* 2° Tabla de Busqueda de Ingresos Detallada */}
+                        <div className={`w-full  cursor-pointer bg-[#ffffff]  ${MostrarBusquedaDetalle ? "block" : "hidden"}`}>
                             <div className="overflow-x-auto">
                                 <table className="w-full">
                                     <thead className="bg-[#696969]">
@@ -599,11 +627,11 @@ class Dashboard extends Component {
                                                 <>
                                                     {reportBusquedaDetallada[0].map((datos, index) => (
 
-                                                        <tr key={index} className="text-[#3b3b3b] border-solid border-[#cfcece79] border-b-2" attr={datos.codigoreporte} onDoubleClick={this.handleMasBusquedaDetalles}>
+                                                        <tr key={index} className="cursor-pointer text-[#3b3b3b] border-solid border-[#cfcece79] border-b-2" attr={datos.codigoreporte} onDoubleClick={this.fnhandleMasBusquedaDetalles}>
                                                             <td className="px-4 py-2 text-xs ">{index + 1}</td>
                                                             <td className="px-4 py-2">{datos.detallereporte}</td>
                                                             <td className="px-4 text-xs text-center ">{datos.cantidad}</td>
-                                                            <td className="px-4 text-right">{FormatearPrecio(datos.importeRow)}</td>
+                                                            <td className="px-4 text-right">{fnFormatearPrecio(datos.importeRow)}</td>
                                                         </tr>
                                                     ))}
                                                     <tr className=" text-[#ffffff] bg-[#fd341e]">
@@ -620,7 +648,7 @@ class Dashboard extends Component {
 
                                                             {this.state.reportBusquedaDetallada && this.state.reportBusquedaDetallada.length > 0 && (
                                                                 <>
-                                                                    {FormatearPrecio(this.state.reportBusquedaDetallada[0].reduce((total, item) => total + item.importeRow, 0))}
+                                                                    {fnFormatearPrecio(this.state.reportBusquedaDetallada[0].reduce((total, item) => total + item.importeRow, 0))}
                                                                 </>
                                                             )}
                                                         </td>
@@ -641,9 +669,10 @@ class Dashboard extends Component {
                     </div>
                 </div>
 
-                <div id="MasDetalleBusqueda" className={`fixed top-0 right-0 h-screen lg:w-5/12 bg-[#fff] w-full md:w-7/12 overflow-auto ${MostrarMasDetalleBusquedas ? "block" : "hidden"}`} >
+                {/* 3° Tabla de Ingresos más detallos de la busqueda */}
+                <div id="MasDetalleBusqueda" className={`fixed top-0  cursor-pointer right-0 h-screen lg:w-5/12 bg-[#fff] w-full md:w-7/12 overflow-auto ${MostrarMasDetalleBusquedas ? "block" : "hidden"}`} >
                     <div className="text-2xl  bg-[#504f4f] flex justify-start p-2  ">
-                        <span className=" text-[#f0f0f0] cursor-pointer hover:text-[#FF3B26] transition-colors" onClick={this.OcultarMasBusquedaDetalle}><FaRegTimesCircle /></span>
+                        <span className=" text-[#f0f0f0] hover:text-[#FF3B26] transition-colors" onClick={this.fnOcultarMasBusquedaDetalle}><FaRegTimesCircle /></span>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full">
@@ -661,11 +690,11 @@ class Dashboard extends Component {
                                         <>
                                             {reportMasDetalleBusqueda[0].map((datos, index) => (
 
-                                                <tr key={datos.codigoreporte} attr={datos.codigoreporte} className="text-[#3b3b3b] border-solid border-[#cfcece79] border-b-2 " onDoubleClick={this.handleBusquedaDetalles}>
+                                                <tr key={datos.codigoreporte} attr={datos.codigoreporte} className="cursor-pointer text-[#3b3b3b] border-solid border-[#cfcece79] border-b-2 " onDoubleClick={this.fnhandleBusquedaDetalles}>
                                                     <td className="px-4 py-2 text-xs">{index + 1}</td>
                                                     <td className="px-4 py-2">{datos.detallereporte}</td>
                                                     <td className="px-4 text-xs text-center ">{datos.cantidad}</td>
-                                                    <td className="px-4 text-right ">{FormatearPrecio(datos.importeRow)}</td>
+                                                    <td className="px-4 text-right ">{fnFormatearPrecio(datos.importeRow)}</td>
                                                 </tr>
                                             ))}
                                             <tr className=" text-[#ffffff] bg-[#fd341e]">
@@ -676,13 +705,12 @@ class Dashboard extends Component {
                                                             {this.state.reportMasDetalleBusqueda[0].reduce((total, item) => total + item.cantidad, 0)}
                                                         </>
                                                     )}
-
                                                 </td>
                                                 <td className="px-4 text-right ">
 
                                                     {this.state.reportMasDetalleBusqueda && this.state.reportMasDetalleBusqueda.length > 0 && (
                                                         <>
-                                                            {FormatearPrecio(this.state.reportMasDetalleBusqueda[0].reduce((total, item) => total + item.importeRow, 0))}
+                                                            {fnFormatearPrecio(this.state.reportMasDetalleBusqueda[0].reduce((total, item) => total + item.importeRow, 0))}
                                                         </>
                                                     )}
                                                 </td>
@@ -697,75 +725,9 @@ class Dashboard extends Component {
                             </tbody>
                         </table>
                     </div>
-
                 </div>
-                {/* <div className="flex w-full  justify-center  ">
-                    <hr className=" border-1 border-[#afaeae65] mb-5 w-full" />
-                </div>
-                <div className="dvTablas grid grid-cols-1  sm:grid-cols-1 md:grid-cols-1  lg:grid-cols-2 gap-1 rounded-md justify-between ">
-                    <div className="bg-[#ffffff] w-full">
-                        <div className="w-full">
-                            <div className="overflow-x-auto">
-                                <table className="w-full">
-                                    <thead className="bg-[#696969]">
-                                        <tr className="text-white ">
-                                            <th className="font-normal ">N°</th>
-                                            <th className="px-4 font-normal text-left"> Detalle</th>
-                                            <th className="px-4  font-normal py-2">Cantidad</th>
-                                            <th className=" font-normal px-4 text-right">Importe</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="">
-                                        {
-                                            reportBusqueda.length > 0 ? (
-                                                <>
-                                                    {reportBusqueda[0].map((datos, index) => (
-
-                                                        <tr key={datos.codigoreporte} attr={datos.codigoreporte} className="text-[#3b3b3b] border-solid border-[#cfcece79] border-b-2 " onDoubleClick={this.handleBusquedaDetalles}>
-                                                            <td className="px-4 py-2 text-xs ">{index + 1}</td>
-                                                            <td className="px-4 py-2">{datos.detallereporte}</td>
-                                                            <td className="px-4 text-center text-xs">{datos.cantidad}</td>
-                                                            <td className="px-4 text-right">{FormatearPrecio(datos.importeRow)}</td>
-                                                        </tr>
-                                                    ))}
-                                                    <tr className=" text-[#ffffff] bg-[#fd341e]">
-                                                        <td className="px-4 py-2 text-left" colSpan={2}>Total:</td>
-                                                        <td className="px-4 text-center">
-                                                            {this.state.reportBusqueda && this.state.reportBusqueda.length > 0 && (
-                                                                <>
-                                                                    {this.state.reportBusqueda[0].reduce((total, item) => total + item.cantidad, 0)}
-                                                                </>
-                                                            )}
-
-                                                        </td>
-                                                        <td className="px-4 text-right ">
-
-                                                            {this.state.reportBusqueda && this.state.reportBusqueda.length > 0 && (
-                                                                <>
-                                                                    {FormatearPrecio(this.state.reportBusqueda[0].reduce((total, item) => total + item.importeRow, 0))}
-                                                                </>
-                                                            )}
-                                                        </td>
-                                                    </tr>
-                                                </>
-                                            )
-                                                :
-                                                <tr className="text-[#3b3b3b]">
-                                                    <td className="px-4 py-2 text-center" colSpan="4">No hay Ingresos disponibles</td>
-                                                </tr>
-                                        }
-                                    </tbody>
-                                </table>
-                            </div>
-
-                        </div>
-                    </div>
-                    
-
-                </div> */}
-
             </div >
         );
     }
 }
-export default Dashboard;
+export default Dashboard2;

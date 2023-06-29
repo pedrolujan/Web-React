@@ -1,3 +1,4 @@
 let fileContent = "";
-export default fileContent = 'https://b7eb-2800-4b0-8010-3206-f99e-2a6-3903-a87.ngrok.io/'; // Exportamos la variable
+//Colocar la ruta para establecer conexion entre la Api y la web (Leer la Api)
+export default fileContent = 'https://7ac9-2800-4b0-8010-cb3-8cb7-f1f8-2997-d030.sa.ngrok.io/'; // Exportamos la variable
 

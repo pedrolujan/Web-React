@@ -1,7 +1,6 @@
 
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Login from '../Pages/Login';
-import Menu from '../Pages/Menu';
 import App from '../App';
 import React, { Component } from "react";
 
@@ -27,7 +26,7 @@ class Rout extends Component {
     }
     render() {
         const idUsuario = getCookie('idUsuario');
-        console.log("Hola" + idUsuario);
+        // console.log(idUsuario);
         return (
             <BrowserRouter >
                 {!idUsuario ?
@@ -36,19 +35,12 @@ class Rout extends Component {
                     </Routes>
                     :
                     <Routes>
-
                         <Route path="/App" element={<App />} />
                     </Routes>
-
                 }
-
             </BrowserRouter >
         )
-
-
     }
-
-
 }
 
 export default Rout;

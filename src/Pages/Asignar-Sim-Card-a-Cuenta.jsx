@@ -1,13 +1,13 @@
 import React from "react";
 
-const Productos = () => {
+const AsignarSinCard = () => {
     return (
         <div>
             <h1>
-                PRODUCTOS
+                AsignarSinCard
             </h1>
         </div>
     )
 
 }
-export default Productos;
+export default AsignarSinCard;

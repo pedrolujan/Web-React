@@ -1,8 +1,6 @@
 import React, { Component } from "react";
 // import "./Login.scss"  
 import axios from "axios";
-import Cookies from "universal-cookie";
-import { useCookies } from 'react-cookie';
 import fileContent from "../assets/LeerAPI";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
@@ -20,8 +18,13 @@ function getCookie(name) {
   }
   return null;
 }
+const idUsuario = getCookie('idUsuario');
+if (idUsuario && window.location.pathname === "/") {
+  window.location.href = "./Dashboard";
+}
 
 class Login extends Component {
+  //Manera de declara un estado dentro de una clase
   state = {
     form: {
       _pcUsuario: '',
@@ -46,8 +49,9 @@ class Login extends Component {
         showPassword: !prevState.form.showPassword
       }
     }));
-  };
-  inicarSesion = async () => {
+  }
+
+  fninicarSesion = async () => {
     console.log(this.state.form);
     await axios.get(baseUrl, {
       params: {
@@ -73,7 +77,6 @@ class Login extends Component {
           document.cookie = `cApePat=${respuesta.result.cApePat}; path=/`;
           document.cookie = `cApeMat=${respuesta.result.cApeMat}; path=/`;
 
-
           //Muestra para mostrar una cookie en especifico
           //   console.log('cPrimerNom: ' + getCookie('cPrimerNom'));
           console.log(document.cookie);
@@ -85,29 +88,21 @@ class Login extends Component {
       .catch(error => {
         console.log("Error");
       });
-
   };
 
-  componentDidMount() {
-    const idUsuario = getCookie('idUsuario');
-    if (!idUsuario && window.location.pathname !== "/") {
-      window.location.href = "/";
-    }
-  }
   handleKeyPress = (event) => {
     if (event.key === 'Enter') {
-      this.inicarSesion();
+      this.fninicarSesion();
     }
   };
-
-
 
   render() {
     return (
-
       <div className=' flex  items-center justify-center w-full min-h-screen m-auto p-2 top-auto left-auto row-auto bg-auto  static  '>
         <div className="w-full lg:w-4/12 sm:w-96 rounded-md overflow-hidden shadow-2xl shadow-[#837f7f] ">
           <div className="bg-[#ffffff] p-5 border-2 border-[#c7c7c785]">
+            
+            {/* dvContenedor Img Logo */}
             <div className="relative z-20 p-3">
               <img
                 id="divLogo"
@@ -115,6 +110,8 @@ class Login extends Component {
                 src="/src/image/LOGO_NEGRO.png"
                 alt="Logo"
               />
+
+              {/* dvContenedor de los input de Usuario y Contraseña */}
               <div className='mt-8'>
                 <div className='flex flex-col'>
                   <label className='text-lg font-medium  text-[#FF3B26]'>Usuario</label>
@@ -131,12 +128,14 @@ class Login extends Component {
                       onKeyDown={this.handleKeyPress}
                       className='inputText w-full border-t-2 border-b-2 border-l-2 border-[#ff3c26b0]   rounded-l-xl p-4 mt-1 text-[#000000] focus:outline-none '
                       placeholder="Ingrese su contraseña"
-                      type={this.state.form.showPassword ? "text" : "password"}
+                      type={this.state.form.showPassword ? "text" : "password"} //propiedad showpassword para colocar los caracteres en oculto
                       id="password"
                       name="_clave"
                       value={this.state.form._clave}
                       onChange={this.handlechange}
                     />
+
+                    {/* Icono para ocultarla la contraseña o mostrarla */}
                     <button
                       onClick={this.handleTogglePassword}
                       className='  border-r-2 border-t-2 border-b-2 border-[#ff3c26b0]  rounded-r-xl p-5 mt-1 text-[#000000] focus:outline-none'
@@ -144,36 +143,23 @@ class Login extends Component {
                       <span className="text-md text-[#FF3B26] ">
                         {this.state.form.showPassword ? <FaEyeSlash /> : <FaEye />}
                       </span>
-
                     </button>
-                  </div>
 
+                  </div>
                 </div>
 
+                {/* dvContenedor del Boton para ingresar  */}
                 <div className='mt-8 flex flex-col pb-5 pt-3'>
                   <button className='active:scale-[.98] active:duration-75 transition-all hover:scale-[1.01]  ease-in-out transform py-4 bg-[#FF3B26] rounded-xl text-white font-bold text-lg'
-                    onClick={() => this.inicarSesion()}
-                  // eslint-disable-next-line jsx-a11y/keypress-events-have-key-actions
-
+                    onClick={() => this.fninicarSesion()} //Funcion para iniciar Sesion
                   >Ingresar</button>
-
                 </div>
-                {/* <div className='mt-8 flex justify-center items-center'>
-                  <p className='font-medium text-base'>Don't have an account?</p>
-                  <button
-                    onClick={() => setAuthState('register')}
-                    className='ml-2 font-medium text-base text-violet-500'>Sign up</button>
-                </div> */}
               </div>
             </div>
           </div>
         </div>
       </div>
-
-
-
     )
   }
-
 };
 export default Login;

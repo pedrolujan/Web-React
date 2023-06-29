@@ -12,7 +12,7 @@
     align-items: center;
 
     //Padding del contenedor
-    top: 64px;
+    top: 60px;
     right: 0px;
 
     background-color: #2d3035;
@@ -71,7 +71,14 @@
 
 
 }
-
+#ImgUserPerfil{
+    max-width: 50px ;
+    max-height: 50px;
+    width: 50px;
+    height: 50px;
+    
+    object-fit: cover;
+}
 .UsuarioPerfil {
 
     display: flex;
@@ -118,20 +125,38 @@
 
 .link {
     display: flex;
-    color: #f17909;
-    padding: 10px 15px;
+    color: #f7f7f7;
+    padding: 5px 15px;
     gap: 15px;
     transition: all 0.5s;
 
     &:hover {
-        background: rgb(217, 200, 240);
-        color: #f35004;
+        background: rgb(236, 236, 236);
+        color: #FF3B26;
         transition: all 0.5s;
     }
 }
 
-.activo {
+.activoPadre {
+    background-color:   #e5e5e57e!important;
+    color: #F24821 !important;
+
+}
+
+.activoSubMenu {
+    background-color: #e5e5e5e1 !important;
+    color: #F24821 !important;
+
+}
+
+.activoHijo {
     background-color: #e5e5e5 !important;
+    color: #F24821 !important;
+
+}
+
+.activoHijoRemove {
+    background-color: #000000 !important;
     color: #FF3B26 !important;
 
 }
@@ -143,7 +168,65 @@ main {
 }
 
 
-#MasDetalleBusqueda{
-    // position: absolute !important ;
-    
+/* Estilos para el div con clase "SideBar" */
+.dvScroll {
+    overflow-y: auto;
+    /* Mostrar barra de desplazamiento vertical cuando sea necesario */
+    height: 100vh;
+    /* Ocupar todo el espacio vertical disponible en la pantalla */
+    padding-bottom: 20px;
+    /* Espacio de relleno en la parte inferior para evitar solapamiento con la barra de desplazamiento */
+    background-color: #2D3035;
+    /* Color de fondo */
 }
+
+/* Estilos para personalizar la apariencia de la barra de desplazamiento en navegadores basados en WebKit */
+.dvScroll::-webkit-scrollbar {
+    width: 0.1rem;
+    /* Ancho de la barra de desplazamiento */
+}
+
+/* Estilos para el "pulgar" de la barra de desplazamiento */
+.dvScroll::-webkit-scrollbar-thumb {
+    background-color: #4f4f4f;
+    /* Color de fondo del pulgar */
+}
+
+/* Estilos para el "pulgar" de la barra de desplazamiento en estado de "hover" */
+.dvScroll::-webkit-scrollbar-thumb:hover {
+    background-color: #7e7e7e;
+    /* Color de fondo del pulgar en estado de "hover" */
+}
+
+//Scroll AccesosDirectos
+.dvScrollAD {
+    // overflow-x: auto;
+    // width: 100%;
+    // padding-bottom: 20px;
+   
+  }
+  
+  .dvScrollAD::-webkit-scrollbar {
+    height: 0px; /* Ajusta el ancho de la barra de desplazamiento */
+  }
+  
+  .dvScrollAD::-webkit-scrollbar-thumb {
+    background-color: #ffffff;
+    border-radius: 5px;
+  }
+  
+  .dvScrollAD::-webkit-scrollbar-thumb:hover {
+    background-color: #7e7e7e;
+  }
+  
+  .dvScrollAD {
+    // scrollbar-width: thin;
+    scrollbar-color: #4f4f4f #2D3035;
+  }
+  
+  
+  
+
+  
+  
+  
